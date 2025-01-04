@@ -45,3 +45,6 @@ python ./autorun.py -train_dataset ./Dataset/easy/train/ -test_dataset ./Dataset
 When you run the command in a terminal, you will get the following prints:
 
 ![image](/result/run_show.svg)
+
+# License
+The majority of this repository is released under the MIT license as found in the LICENSE file.
