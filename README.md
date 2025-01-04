@@ -31,18 +31,19 @@ In this work, we propose a Geometric Evolution Symbolic Regression(GESR) algorit
 
 Using conda and the environment.yml file:
 
-1. Run `conda env create -n GESR -f environment.yml`.
+- Run `conda env create -n GESR -f environment.yml`.
 
 ## Run the model
 
 To launch a model training, a command without any additional arguments can be used, which will launch a model training for livermore datasets:
-```
+
+```bash
 python ./autorun.py
 ```
 
 You can also use additional arguments to train the specified datasets or specify the save path, like:
 
-```
+```bash
 python ./autorun.py -train_dataset ./Dataset/easy/train/ -test_dataset ./Dataset/easy/test/ -save_file ./result/Feynman_easy_result.txt -seed 1111
 ```
 
