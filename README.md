@@ -2,11 +2,12 @@
   
 This repository is the official implementation of "GESR"
 
+![image](/result/strogatz_bacres1.gif)
+
 ## Abstract
 
 In this work, we propose a Geometric Evolution Symbolic Regression(GESR) algorithm. Three key modules are presented in GESR to enhance the approximation: (1) a new semantic gradient concept, proposed from the observation of inaccurate approximation results within semantic backpropagation, to assist the exploration and improve the accuracy of semantics approximation; (2) a new geometric semantic search operator, tailored for efficiently approximating the target formula directly in the sparse topological space, to obtain more accurate and interpretable solutions under strict program size constraints; (3) the Levenberg-Marquardt algorithm with L1 regularization, used for the adjustment of expression structures and the optimization of global subtree weights to assist the proposed geometric semantic search operator.
 
-![image](/result/strogatz_bacres1.gif)
 
 ## Setup
 
