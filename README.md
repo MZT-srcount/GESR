@@ -1,8 +1,8 @@
 # GESR: A Geometric Evolution Model for Symbolic Regression  
   
-This repository is the official implementation of "GESR"
-
 ![image](/result/strogatz_bacres1.gif)
+
+This repository is the official implementation of "GESR"
 
 ## Abstract
 
