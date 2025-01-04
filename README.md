@@ -1,10 +1,5 @@
 # GESR: A Geometric Evolution Model for Symbolic Regression  
   
-![image](/result/strogatz_bacres1.gif)
-
-This repository is the official implementation of "GESR"
-
-
 <p align="center">
   <a href="https://github.com/MZT-srcount/GESR?tab=readme-ov-file#abstract">Abstract</a> |
   <a href="https://github.com/MZT-srcount/GESR?tab=readme-ov-file#setup">Setup</a> |
@@ -12,6 +7,12 @@ This repository is the official implementation of "GESR"
   <a href="https://github.com/MZT-srcount/GESR?tab=readme-ov-file#dependencies">Dependencies</a> |
   <a href="https://github.com/MZT-srcount/GESR?tab=readme-ov-file#examples">Examples</a> |
 </p>
+
+![image](/result/strogatz_bacres1.gif)
+
+This repository is the official implementation of "GESR"
+
+
 
 
 ## Abstract
