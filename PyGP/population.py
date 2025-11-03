@@ -145,7 +145,7 @@ class Population(PyGP.Base):
         self.semantics = self.PROC_MANAGER.PopSemantic(data_rg=self.data_rg, base_dict=dill.dumps(self.getBasecore()), seed=self.seed)
         # self.semantics = SManager(proc_manager=self.PROC_MANAGER, data_rg=self.data_rg, base_dict=dill.dumps(self.getBasecore()), seed=self.seed)
 
-    def backpSelect(self, select_num, pmask):  # 选择语义backpropagation节点
+    def backpSelect(self, select_num, pmask):  # select nodes for semantic backpropagation
         self.semantics.reset() #refresh
         # s_idx = np.argsort(self.child_fitness)
         # s_idx = s_idx[:int(self.pop_size / 10)]
@@ -415,7 +415,7 @@ class Population(PyGP.Base):
                     for i in range(self.pop_size):
                         self.pprogs[i].seman_sign = -1
                         record_1 += cashUpdate(self.pprogs[i], self.CASH_MANAGER, id_collect, i + self.pop_size)
-            self.ID_MANAGER.collect(list(id_collect.keys()))#多进程环境不适用，因此暂不收集
+            self.ID_MANAGER.collect(list(id_collect.keys()))
             # self.CASH_MANAGER.collectReleaseNodes(cash_collect)
 
     def prepare(self, option=0):
@@ -426,7 +426,7 @@ class Population(PyGP.Base):
         cvals = []
         id_altr = [self.n_terms + 1 + self.pop_size + self.CASH_MANAGER.getCashSize(1) * 2]
 
-        if len(self.backfuncs) > 0 and option == 0:  # 需要收集新的语义函数，原先函数可删除
+        if len(self.backfuncs) > 0 and option == 0: 
             self.backfuncs = []
             self.semantic_data = {}
         s_clts_ = []
@@ -455,14 +455,14 @@ class Population(PyGP.Base):
         else:
             return (e_clts, e_iposi, id_altr[0], cvals)
 
-    def verify(self, dataset, fitness, type=1, exp_check=None, inverse_transform=True):  # [] 需要关闭cash
+    def verify(self, dataset, fitness, type=1, exp_check=None, inverse_transform=True): 
         from .data_funcs import sc_y
         global sc_y
         verify_fitness = np.empty(self.pop_size).astype(np.float32 if PyGP.DATA_TYPE == 4 else np.float64)
         dataset_len = len(fitness)
         exp_attr = self.prepare(type)
         (subdataset_size, input_gpu, input_pitch) = self.cuda_mem_manager.input_alloc(-1, exp_attr[2],
-                                                                                          dataset_len)  # [ ] 存在问题
+                                                                                          dataset_len) 
         if exp_check is not None:
             if exp_check != exp_attr[2]:
                 print(len(exp_check), len(exp_attr[2]))
@@ -477,7 +477,7 @@ class Population(PyGP.Base):
         const_vals_gpu = self.cuda_mem_manager.const_alloc(len(exp_attr[3]) * PyGP.DATA_TYPE)
 
         self.cuda_mem_manager.host2device(np.array(fitness, dtype=np.float32 if PyGP.DATA_TYPE == 4 else np.float64), output_gpu)
-        # 存在问题， const_vals_gpu大小等于0
+        
         self.cuda_mem_manager.host2device(np.array(exp_attr[3], dtype=np.float32 if PyGP.DATA_TYPE == 4 else np.float64), const_vals_gpu)
         self.cuda_mem_manager.host2device(np.array(exp_attr[0], dtype=np.int32), exps_gpu)
         self.cuda_mem_manager.host2device(np.array(exp_attr[1], dtype=np.int32), initposi_gpu)
@@ -500,7 +500,6 @@ class Population(PyGP.Base):
             eval_info.set_batch_idx(i - 1)
             eval_info.set_batch_idx(i - 1)
             if i > 0:
-                # input_gpu可以偏移么
                 eval_info.set_offset(input_pitch * (self.n_terms + 1), subdataset_size * (i - 1))
 
                 #for normalize
@@ -535,7 +534,7 @@ class Population(PyGP.Base):
                                              subdataset_size * PyGP.DATA_TYPE, self.n_terms, streams[i % 2], 0)
             # print(self.n_terms * self.subdataset_size, self.n_terms, self.subdataset_size)
 
-            if i > 0:  # [] pop非整数时的grid和block等的数量需要处理
+            if i > 0:  
                 streams[i % 2].wait_for_event(eval_record)
             execution_GPU(exps_gpu, initposi_gpu, input_gpu, np.int64(input_pitch),
                           cuda.In(np.array(info.get_tuple(), dtype=np.int32)), const_vals_gpu,
@@ -648,11 +647,8 @@ class Population(PyGP.Base):
             tsematic_cpu = np.empty((len(bfs_posi) - 1) * d_len).astype(np.float64)
             tderivate_cpu = np.empty((len(bfs_posi) - 1) * d_len).astype(np.float64)
 
-        # gpu内存分配
-        # [] 如果dataset_size不能被整除咋办，需要处理
-        # [] 如果后期树节点增长过多导致subdataset_size需要重新调整，咋办(cash)？
         (self.subdataset_size, input_gpu, input_pitch) =\
-            c_mng.input_alloc(-1, height, d_len)  # [ ] 存在问题
+            c_mng.input_alloc(-1, height, d_len)  
 
         sd_len = self.subdataset_size
 
@@ -668,12 +664,10 @@ class Population(PyGP.Base):
         #     print(any(np.isnan(exp_attr[3])), any(np.isinf(exp_attr[3])))
         #     assert (0 == 1)
         c_mng.host2device(np.array(self.fitness).astype(np.float32 if PyGP.DATA_TYPE == 4 else np.float64), output_gpu)
-        # 存在问题， cvals_gpu大小等于0
         c_mng.host2device(np.array(exp_attr[3]).astype(np.float32 if PyGP.DATA_TYPE == 4 else np.float64), cvals_gpu)
         c_mng.host2device(np.array(exp_attr[0]).astype(np.int32), exps_gpu)
         c_mng.host2device(np.array(exp_attr[1]).astype(np.int32), initposi_gpu)
 
-        # GPU-CPU 内存传输
         if PyGP.SEMANTIC_SIGN and len(s_bfs) > 0:
             s_exp_gpu = cuda.mem_alloc(len(s_bfs) * 4)
             b_posi_gpu = cuda.mem_alloc(len(bfs_posi) * 4)
@@ -688,7 +682,7 @@ class Population(PyGP.Base):
 
             for i in range(len(bfs_posi) - 1):
                 cuda.memcpy_dtod(int(results_gpu) + d_len * 8 * i, fit_gpu,
-                                 d_len * 8)  # result_gpu初始化为0
+                                 d_len * 8) 
 
 
         iter_time = int(d_len / sd_len)
@@ -733,7 +727,7 @@ class Population(PyGP.Base):
         if self.t_dataset is None or self.t_dataset[1] != sd_len:
             self.t_dataset = PyGP.dataset_transform(iter_time, self.dataset, sd_len)
         # print(iter_time, len(self.dataset), len(self.dataset[0]))
-        assert (iter_time == 1)# ![ ] 因为evaluation和Pearson的原因，现在最好一次跑完，不分代
+        assert (iter_time == 1)
         for i in range(iter_time):
             info.set_iterid(i)
             # print("iter_time: ", iter_time, d_len, sd_len, input_pitch, len(self.t_dataset[0][0]), d_len)
@@ -741,7 +735,6 @@ class Population(PyGP.Base):
             info.set_buffer(buffer)
             eval_info.set_batch_idx(i - 1)
             if i > 0:
-                # input_gpu可以偏移么
                 eval_info.set_offset(input_pitch * (self.n_terms + 1), sd_len * (i - 1))
                 evaluation_GPU(output_gpu, input_gpu, fitness_gpu, np.int64(input_pitch),
                                cuda.In(np.array(eval_info.get_tuple(), np.int32)),
@@ -753,7 +746,7 @@ class Population(PyGP.Base):
                                              self.t_dataset[0][i], sd_len * PyGP.DATA_TYPE,
                                              sd_len * PyGP.DATA_TYPE, self.n_terms, streams[i % 2], 0)
 
-            if i > 0:  # [] pop非整数时的grid和block等的数量需要处理
+            if i > 0: 
                 streams[i % 2].wait_for_event(eval_record)
                 streams[i % 2].wait_for_event(semsave_record)
             execution_GPU(exps_gpu, initposi_gpu, input_gpu, np.int64(input_pitch),
@@ -780,7 +773,7 @@ class Population(PyGP.Base):
                                          sd_len * PyGP.DATA_TYPE, 1,
                                          streams[3], 0,
                                          src_y_offset=s_nodes[j],
-                                         dst_y_offset=j * iter_time + i)  # [] 这种偏移方式可能存在问题
+                                         dst_y_offset=j * iter_time + i)  
                     else:
                         offset = (j * iter_time + i) * sd_len
                         semsave_cpu[offset: offset + sd_len] = exp_attr[3][-s_nodes[j] - 1]
@@ -881,7 +874,6 @@ class Population(PyGP.Base):
         # print("child_prlt: ", self.child_prlt)
         end = time.time()
         # print('semantic execution: ', end - start)
-        # print("!!!!!!!!!!!!!!!!!!!!!!!!!")#追踪任意个体的语义有关状态
         # print('tnode_again:')
         # print('self.fitness[0]: ', self.fitness[0])
         # print('self.x0: ', self.dataset)
@@ -1034,4 +1026,5 @@ class Population(PyGP.Base):
         raise NotImplementedError
 
     def preExecution(self):
+
         raise NotImplementedError
