@@ -3,7 +3,7 @@ import numpy as np
 import random
 import PyGP
 import math
-def randSubtree(prog, depth_limit, rand_state, data_rg):#pop是浅拷贝还是深拷贝？
+def randSubtree(prog, depth_limit, rand_state, data_rg):
     init_func = prog.funcs.funcSelect(rand_state.randint(0, prog.funcs.len() - 1))
     if depth_limit <= 1:
         if prog.const_range is None:
@@ -71,7 +71,7 @@ def randSubtree(prog, depth_limit, rand_state, data_rg):#pop是浅拷贝还是�
 
     return root
 
-def bounds_check(subtr:TreeNode, smt_rg, data_rg):#![ ] 不支持有多个范围的情况
+def bounds_check(subtr:TreeNode, smt_rg, data_rg):
 
     rg = (smt_rg[0], smt_rg[1])
     ancestors = subtr.getAncestors()
@@ -98,17 +98,17 @@ def bounds_check(subtr:TreeNode, smt_rg, data_rg):#![ ] 不支持有多个范围
 
 def mutation(progs: [Program], smts, mut_rate, funcs):
     data_rg = smts.get_datarg()
-    cst_r = True if progs[0].const_range is not None else False #假设所有progs都拥有相同的const_range
+    cst_r = True if progs[0].const_range is not None else False 
     slted_progs = np.squeeze(np.where(np.random.random(len(progs) - 1) < mut_rate))
     rnode_depth = list(map(lambda x: np.random.randint(0, x.depth) if 0 < x.depth else 0, progs))
     rnode = np.fromiter(map(lambda x: np.random.randint(progs[x].depth_nnum(rnode_depth[x] - 1) + 1 if rnode_depth[x] > 0 else 0, progs[x].depth_nnum(rnode_depth[x]) + 1) if rnode_depth[x] > 0 else 0, slted_progs), dtype=np.int32)
-    # rnode = np.fromiter(map(lambda x: random.randint(1, progs[x].length - 1), slted_progs), dtype=np.int32)#每棵树随机选一个点
-    r_prob = np.random.random(len(slted_progs))#每棵树一个概率值，做哪种操作
+    
+    r_prob = np.random.random(len(slted_progs))
     split_progs = slted_progs[r_prob < 0.9]
     split_rnode = rnode[r_prob < 0.9]
     time = 5
     # assert (not cst_r)
-    for (key, i) in enumerate(split_progs):#子树替换
+    for (key, i) in enumerate(split_progs):
         sub_root = progs[i].getSubTree(split_rnode[key])
         h_max = sub_root.height()#progs[i].depth - sub_root.relative_depth()
         count = 0
@@ -130,7 +130,7 @@ def mutation(progs: [Program], smts, mut_rate, funcs):
     split_rnode = rnode[r_prob >= 0.1]
     len_nterms = progs[0].n_terms * 10
     tmn = list(map(lambda x: random.randint(0, len_nterms) if cst_r else random.randint(0, len_nterms - 1), split_progs))
-    for (key, i) in enumerate(split_progs):#节点替换
+    for (key, i) in enumerate(split_progs):
         sub_root = progs[i].getSubTree(split_rnode[key])
         terminal = tmn[key]
 

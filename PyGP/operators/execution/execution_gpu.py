@@ -37,7 +37,7 @@ class Execution:
         cuda_manager.host2device(np.array(exp_attr[0], dtype=np.int32), exps_gpu)
         cuda_manager.host2device(np.array(exp_attr[1], dtype=np.int32), initposi_gpu)
 
-        # iter_time = int(dataset_len / subdataset_size) 这里必须单次解决，因此input_alloc还有点问题
+        
         info = Info(1, subdataset_size, funcs_set.max_arity(), len(progs), dataset_len)
         execution_GPU = mod.get_function("execution_GPU")
         t_dataset = PyGP.dataset_transform(1, dataset, subdataset_size)
@@ -80,4 +80,4 @@ class Execution:
         autoinit.context.synchronize()
         # print('output: ', output)
 
-        return output # （输出）
+        return output 

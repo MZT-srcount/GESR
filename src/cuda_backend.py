@@ -71,9 +71,9 @@ class MemManager:
         else:
             if self.input_height > height:
                 return (self.width_, self.input_gpu, self.input_pitch)
-            else:  # 如果input_height过小还是可能会出问题，需要对width也调整
+            else:  
                 self.input_height = height
-                del self.input_gpu  # [ ] 释放内存，是否有效？
+                del self.input_gpu  
 
         if self.width_ * self.input_height * PyGP.DATA_TYPE > self.input_mem_size:
             raise ValueError("The request input memory is out of limitation")
@@ -290,7 +290,7 @@ __global__ void pearson_rlt_GPU(double* input, double* output, double* results, 
     double* Y = (double*)((char*)XYZ + blockIdx.x * info[1] * 3 * 8 + info[1] * 8);
     double* Z = (double*)((char*)XYZ + blockIdx.x * info[1] * 3 * 8 + info[1] * 8 * 2);
     int tid = threadIdx.x;
-    //=======================================获取均值
+    //=======================================
     int pop_init = blockIdx.x * pitch;
     double* output_posi = (double*)((char*)output + pop_init + info[3]);
     while(tid < info[1]){
@@ -328,7 +328,7 @@ __global__ void pearson_rlt_GPU(double* input, double* output, double* results, 
 
     __threadfence();
     __syncthreads();
-    //======================================差值
+    //======================================
     tid = threadIdx.x;
     while(tid < info[1]){
         X[tid] = output_posi[tid] - x_mean;
@@ -459,9 +459,9 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
     //(self.batch_num, self.subdata_size, self.input_max, self.pop_size, self.buffer_id, self.buffer_size, self.buffer_posi, self.iter_id, self.data_size)
     int warp_num = blockDim.x / 32, wid = threadIdx.x / 32;
     int bn_forbatch = gridDim.x / info[0];
-    int dprocess_size = info[1] / info[0];//如果不能整除呢，貌似没有考虑
+    int dprocess_size = info[1] / info[0];
     int unloop = 7; // unloop time
-    int thridx_tn = 32;//假设每个minidataset由一个warp进行处理
+    int thridx_tn = 32;
 
     //printf(" dataset[%d]: %f,%d,%d, %d, %d, %d\\n", threadIdx.x, dataset[threadIdx.x], blockDim.x, gridDim.x, blockIdx.x % bn_forbatch, warp_num, info[3]);
     __syncthreads();
@@ -491,7 +491,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 continue;
             }
             if(info[6] + info[5] > prog_iop[input_idx] && prog_iop[input_idx] >= info[6]){
-                input_posi[i] = (double*)(ds_gpu + (prog_iop[input_idx] + buffer_posi) * pitch);//位于缓冲位置，需要进行偏移
+                input_posi[i] = (double*)(ds_gpu + (prog_iop[input_idx] + buffer_posi) * pitch);
             }
             else{
                 input_posi[i] = (double*)(ds_gpu + prog_iop[input_idx] * pitch);
@@ -507,9 +507,9 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
         __syncthreads();
         switch(prog_iop[op_idx]){
             case 0://'+'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
-                    if(prog_iop[op_idx + 3] < 0){//两变量均是const
+                    if(prog_iop[op_idx + 3] < 0){
                         const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                         double const_res = const_data[0] + const_data[1];
                         for(int i = data_posi; i < data_eposi; i += thridx_tn){
@@ -522,7 +522,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                         }
                     }
                 }
-                else if(prog_iop[op_idx + 3] < 0){//另一边为const
+                else if(prog_iop[op_idx + 3] < 0){
                     const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[2][i] = const_data[1] + input_posi[0][i];
@@ -548,9 +548,9 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 1: //'-'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
-                    if(prog_iop[op_idx + 3] < 0){//两变量均是const
+                    if(prog_iop[op_idx + 3] < 0){
                         const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                         double const_res = const_data[0] - const_data[1];
                         for(int i = data_posi; i < data_eposi; i += thridx_tn){
@@ -563,7 +563,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                         }
                     }
                 }
-                else if(prog_iop[op_idx + 3] < 0){//另一边为const
+                else if(prog_iop[op_idx + 3] < 0){
                     const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[2][i] = input_posi[0][i] -  const_data[1];
@@ -588,9 +588,9 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 2: //'*'
-                if(prog_iop[op_idx + 2] < 0){//是否存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
-                    if(prog_iop[op_idx + 3] < 0){//两变量均是const
+                    if(prog_iop[op_idx + 3] < 0){
                         const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                         double const_res = const_data[0] * const_data[1];
                         for(int i = data_posi; i < data_eposi; i += thridx_tn){
@@ -603,7 +603,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                         }
                     }
                 }
-                else if(prog_iop[op_idx + 3] < 0){//另一边为const
+                else if(prog_iop[op_idx + 3] < 0){
                     const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[2][i] = const_data[1] * input_posi[0][i];
@@ -628,9 +628,9 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 3: //'/'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
-                    if(prog_iop[op_idx + 3] < 0){//两变量均是const
+                    if(prog_iop[op_idx + 3] < 0){
                         const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                         double const_res = const_data[0];
                         if(fabs(const_data[1]) == 0.0){
@@ -655,7 +655,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                         }
                     }
                 }
-                else if(prog_iop[op_idx + 3] < 0){//另一边为const
+                else if(prog_iop[op_idx + 3] < 0){
                     const_data[1] = const_vals[-prog_iop[op_idx + 3] - 1];
                     if(fabs(const_data[1]) == 0.0){
                         for(int i = data_posi; i < data_eposi; i += thridx_tn){
@@ -697,7 +697,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 4://'sin'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[1][i] = sin(const_data[0]);
@@ -722,7 +722,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 5://'cos'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[1][i] = cos(const_data[0]);
@@ -747,7 +747,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 6://'loge'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         if (fabs(const_data[0]) < 1e-12){
@@ -786,7 +786,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 7://'exp'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         if (const_data[0] > 8){
@@ -825,7 +825,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 8://'sqrt'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[1][i] = sqrt(fabs(const_data[0]));
@@ -849,7 +849,7 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
                 }
                 break;
             case 9://'fabs'
-                if(prog_iop[op_idx + 2] < 0){//存在const
+                if(prog_iop[op_idx + 2] < 0){
                     const_data[0] = const_vals[-prog_iop[op_idx + 2] - 1];
                     for(int i = data_posi; i < data_eposi; i += thridx_tn){
                         input_posi[1][i] = fabs(const_data[0]);
@@ -891,9 +891,6 @@ __global__ void execution_GPU(int* program, int* program_iposi, double* dataset,
     __syncthreads();
 }
 
-//每个block一个subpop,不分batch
-//[] 将program中需要backpropagation进行标记，然后不让其被父节点覆盖
-//[] dataset应该是subdataset 需要修改过来
 __global__ void backpropagation(int* program, int* progs_initposi, double* results, double* drvt_results, double* dataset, size_t pitch, int* info, double* const_vals, long exp_num){
     int wsize_perprog = blockDim.x / (info[3] / gridDim.x);
     int subdata_size = info[1];
@@ -924,14 +921,14 @@ __global__ void backpropagation(int* program, int* progs_initposi, double* resul
         for(int i = 0; i < input_size; ++i){
             int input_idx = op_idx + 2 + i;
             if(info[6] + info[5] > program[input_idx] && program[input_idx] >= info[6]){
-                input_posi[i] = (double*)(ds_gpu + (program[input_idx] + buffer_posi) * pitch);//位于缓冲位置，需要进行偏移
+                input_posi[i] = (double*)(ds_gpu + (program[input_idx] + buffer_posi) * pitch);
             }
             else{
                 input_posi[i] = (double*)(ds_gpu + program[input_idx] * pitch);
             }
         }
         double const_data[NUM_MAX];
-        int input_locate = program[op_idx + 3 + input_size], input_need = 1 - input_locate;//[] 只支持二维这里，后续需要修改
+        int input_locate = program[op_idx + 3 + input_size], input_need = 1 - input_locate;
         //if(threadIdx.x == 32 * 2 && blockIdx.x == 11){
         //    float data_0, data_1;
         //    if(program[op_idx + 2] >= 0){
@@ -1011,7 +1008,7 @@ __global__ void backpropagation(int* program, int* progs_initposi, double* resul
                         const_data[0] = const_vals[-program[op_idx + 3] - 1];
                         for(int i = data_posi; i < info[1]; i += wsize_perprog){
                             if(fabs(const_data[0]) == 0.0){
-                                results[res_initposi + i] = NAN;//[] 是否应该这么处理？？不太确定
+                                results[res_initposi + i] = NAN;
                             }
                             else{
                                 results[res_initposi + i] /= const_data[0];
@@ -1034,7 +1031,7 @@ __global__ void backpropagation(int* program, int* progs_initposi, double* resul
                         const_data[0] = const_vals[-program[op_idx + 2] - 1];
                         for(int i = data_posi; i < info[1]; i += wsize_perprog){
                             if(fabs(const_data[0]) == 0.0){
-                                results[res_initposi + i] = NAN;//[] 是否应该这么处理？？不太确定
+                                results[res_initposi + i] = NAN;
                             }
                             else{
                                 results[res_initposi + i] /= const_data[0];
@@ -1380,7 +1377,7 @@ __global__ void backpropagation(int* program, int* progs_initposi, double* resul
 }
 
 __global__ void derivative(int* program, int* progs_initposi, double* results, double* dataset, int pitch, int* info, double* const_vals, int exp_num){
-    int wsize_perprog = blockDim.x / (info[3] / gridDim.x);//每个prog分配到的线程数量
+    int wsize_perprog = blockDim.x / (info[3] / gridDim.x);
     int subdata_size = info[1];
     int init_data = threadIdx.x % (wsize_perprog);
     int prog_idx = blockIdx.x * (info[3] / gridDim.x) + threadIdx.x / wsize_perprog;
@@ -1406,14 +1403,14 @@ __global__ void derivative(int* program, int* progs_initposi, double* results, d
         for(int i = 0; i < input_size; ++i){
             int input_idx = op_idx + 2 + i;
             if(info[6] + info[5] > program[input_idx] && program[input_idx] >= info[6]){
-                input_posi[i] = (double*)(ds_gpu + (program[input_idx] + buffer_posi) * pitch);//位于缓冲位置，需要进行偏移
+                input_posi[i] = (double*)(ds_gpu + (program[input_idx] + buffer_posi) * pitch);
             }
             else{
                 input_posi[i] = (double*)(ds_gpu + program[input_idx] * pitch);
             }
         }
         double const_data[NUM_MAX];
-        int input_locate = program[op_idx + 3 + input_size], input_need = 1 - input_locate;//[] 只支持二维这里，后续需要修改
+        int input_locate = program[op_idx + 3 + input_size], input_need = 1 - input_locate;
 
         switch(program[op_idx]){
             case 0://'+'

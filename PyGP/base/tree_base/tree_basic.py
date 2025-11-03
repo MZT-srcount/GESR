@@ -5,7 +5,7 @@ import PyGP
 import array
 
 
-class TreeNode(Base):  # [] copy必须init一个treenode才能更新visited从而更新祖上节点的缓存；如果Crossover采用迁移而非复制的方式，如何处理祖上节点缓存的更新
+class TreeNode(Base):  
     def __init__(
             self,
             nodeval,
@@ -18,15 +18,15 @@ class TreeNode(Base):  # [] copy必须init一个treenode才能更新visited从�
             self.node_id = self.ID_MANAGER.idAllocate()
         else:
             self.node_id = node_id
-        self.nodeval = nodeval  # 该节点的值，Func则对应Func类；特征则对应int;常量则对应float
+        self.nodeval = nodeval  
         if parent is None:
             self.parent = None
         else:
             self.parent = parent
         if cash is None:
-            self.cash = [0, -1]  # cash_state表明节点cash状态，cash_id用于GPU位置
+            self.cash = [0, -1]  
         else:
-            self.cash = cash.copy()  # cash状态
+            self.cash = cash.copy()  
 
         # else:
         self.child_size = -1
@@ -112,7 +112,7 @@ class TreeNode(Base):  # [] copy必须init一个treenode才能更新visited从�
                      range(childs_len)])
                 next_strings.extend(
                     [(cur_posi + int((i - (childs_len - 1) / 2) * posi / (2 ** (depth + 1))), i - (childs_len - 1) / 2)
-                     for i in range(childs_len)])  # 用于画斜杠
+                     for i in range(childs_len)])  
             if len(stack) == 0:
                 stack = next_stack
                 next_stack = []
@@ -405,7 +405,7 @@ class Program(Base):
         # assert (0 == 1)
         return mainbody
 
-    def buildProgram(self, rand_state):  # pop是浅拷贝还是深拷贝？
+    def buildProgram(self, rand_state):  
         init_func = self.funcs.funcSelect(rand_state.randint(0, self.funcs.len() - 1))
         len_nterms = self.n_terms
         divide_check = []

@@ -13,12 +13,12 @@ def r_snodes_select(smt_len, num):
     return np.sort(slts)
 
 def indivSelect_sem_4(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_origin_,
-                      depth_limit, mask, s3_size, tr_origin, org):  # 用于语义的个体选择
+                      depth_limit, mask, s3_size, tr_origin, org):  
     candidate_ = [candidates[i].semantic for i in range(len(candidates))]
     tsematic = tsematic_ * mask
     candidate = candidate_ * mask
     tgdrvt = tgdrvt_ * mask
-    # 选一个最近点
+    
     idx_min = [-1, -1]
     
     cdd_mean_list = list(map(lambda x: np.mean(x), candidate))
@@ -29,26 +29,26 @@ def indivSelect_sem_4(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_
 
 
     rsdls_ = list(map(lambda x: np.subtract(tsematic, candidate[x] * b_list[x] + a_list[x]), range(len(candidate))))
-    # dis_all_w = list(map(lambda x: np.sqrt(np.dot(x * tgdrvt_, x)), rsdls_))  # 加权距离
-    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  # 加权距离
+    
+    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  
     dis_sorted = np.argsort(dis_all_w)
 
     candidate_min = [candidate[dis_sorted[0]], candidate[len(candidate) - 1]]
     idx_min = [int(dis_sorted[0]), int(len(candidate) - 1)]
     k = [b_list[dis_sorted[0]], a_list[dis_sorted[0]]]
     
-    # 返回该两个点
+    
     return (idx_min, candidate_min, None, k, True)
 
 
 def indivSelect_sem_blist(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candidate_origin_, origin_size, trs_size,
-                          depth_limit, mask, idx=None):  # 用于语义的个体选择
+                          depth_limit, mask, idx=None):  
     tsematic = tsematic_ * mask
     candidate = candidate_ * mask
     tgdrvt = tgdrvt_ * mask
     tgdrvt_origin = tgdrvt_origin_ * mask
     candidate_origin = candidate_origin_ * mask
-    # 选一个最近点
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
     # tgdrvt_f = tgdrvt[tgdrvt_f_idx]
@@ -67,11 +67,11 @@ def indivSelect_sem_blist(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candid
 
     # rsdls = list(map(lambda x: np.subtract(center, x), candidate))
     # # dis_all = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls))
-    # dis_all_w = list(map(lambda x: np.sqrt(np.dot(x * tgdrvt, x)), rsdls))#加权距离
+    
     rsdls_ = list(map(lambda x: np.subtract(tsematic, candidate[x] * b_list[x]), range(len(candidate))))
 
     # dis_all = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls))
-    dis_all_w_ = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  # 加权距离
+    dis_all_w_ = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  
     # dis_all_w = np.add(dis_all_w_, dis_all_w)
     # rsdls_f = list(map(lambda x: np.subtract(tsematic_f, x), candidate_f))
     # dis_all_f_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_f))
@@ -137,7 +137,7 @@ def indivSelect_sem_blist(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candid
     k_list = list(map(lambda x: least_square_method(tsematic, candidate_min[0] * b_list[idx], candidate[x], tgdrvt),
                       range(len(candidate))))
 
-    # 直接最小二乘计算出k值后估计
+    
 
     tgsmt_mean_ = np.dot(tsematic_, tsematic_)
     y_tmp_ = tsematic_ - tgsmt_mean_
@@ -150,7 +150,7 @@ def indivSelect_sem_blist(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candid
         # return (vec, vec_1)
         return vec
 
-    # 以该最近点为基础，选另一个横线上的最近点
+    
     # res = list(map(lsm_dist, range(len(candidate))))
     # res_0, res_1 = np.argsort([vec[0] for vec in res]), np.argsort([vec[1] for vec in res])
     # res = np.zeros(len(res))
@@ -196,17 +196,17 @@ def indivSelect_sem_blist(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candid
         k = [k0 * b_list[idx_min[0]], k1]
     else:
         k = [k0 * b_list[idx_min[0]], k1]
-    # 返回该两个点
+    
     return (idx_min, candidate_min, b, k, succeed)
 
 
 def indivSelect_sem_3(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_origin_,
-                      depth_limit, mask, s3_size, tr_origin, org):  # 用于语义的个体选择
+                      depth_limit, mask, s3_size, tr_origin, org):  
     candidate_ = [candidates[i].semantic for i in range(len(candidates))]
     tsematic = tsematic_ * mask
     candidate = candidate_ * mask
     tgdrvt = tgdrvt_ * mask
-    # 选一个最近点
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
     k = None
@@ -229,7 +229,7 @@ def indivSelect_sem_3(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_
 
     rsdls_ = list(map(lambda x: np.subtract(tsematic, candidate[x] * b_list[x]), range(len(candidate))))
 
-    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x * tgdrvt_, x)), rsdls_))  # 加权距离
+    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x * tgdrvt_, x)), rsdls_))  
     dis_sorted = np.argsort(dis_all_w)
 
     E_2 = np.sqrt(np.dot(rsdls_cur * tgdrvt_ - np.mean(rsdls_cur * tgdrvt_),
@@ -305,12 +305,12 @@ def indivSelect_sem_3(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_
                 k = [k[0], k[1]]
 
                 break
-    # 返回该两个点
+    
     return (idx_min, candidate_min, None, k, succeed)
 
 
 def indivSelect_sem(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_origin_,
-                    depth_limit, mask, s3_size, tr_origin, org):  # 用于语义的个体选择
+                    depth_limit, mask, s3_size, tr_origin, org):  
     candidate_ = [candidates[i].semantic for i in range(len(candidates))]
     tsematic = tsematic_ * mask
     candidate = candidate_ * mask
@@ -328,7 +328,7 @@ def indivSelect_sem(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_or
     # E_1 = np.sqrt(np.dot(tsematic_ - np.mean(tsematic_),
     #                      tsematic_ - np.mean(tsematic_)) / len(tsematic_))
 
-    # 选一个最近点
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
     k = None
@@ -350,9 +350,9 @@ def indivSelect_sem(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_or
 
     rsdls_ = list(map(lambda x: np.subtract(tsematic, candidate[x] * b_list[x]), range(len(candidate))))
 
-    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  # 加权距离
+    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  
     dis_sorted = np.argsort(dis_all_w)
-    # dis_all_w_1 = list(map(lambda x: np.sqrt(np.dot(x * tgdrvt, x)), rsdls_))  # 加权距离
+    
     # dis_sorted_1 = np.argsort(dis_all_w_1)
 
     E_2 = np.sqrt(np.dot(rsdls_cur - np.mean(rsdls_cur),
@@ -679,18 +679,18 @@ def indivSelect_sem(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_or
         #     candidate_min = [cdd_0_, cdd_1_]
         #     idx_min = [int(vec_tmp[v_sort[0]][1]), int(vec_tmp[v_sort[0]][2])]
 
-    # 返回该两个点
+    
     return (idx_min, candidate_min, None, k, succeed)
 
 
 def indivSelect_sem_2(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_origin_,
-                      depth_limit, mask, s3_size, tr_origin, org):  # 用于语义的个体选择
+                      depth_limit, mask, s3_size, tr_origin, org):  
     candidate_ = [candidates[i].semantic for i in range(len(candidates))]
     tsematic = tsematic_ * mask
     candidate = candidate_ * mask
     tgdrvt = tgdrvt_ * mask
 
-    # 选一个最近点
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
     k = None
@@ -703,7 +703,7 @@ def indivSelect_sem_2(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_
 
     rsdls_ = list(map(lambda x: np.subtract(tsematic, candidate[x] * b_list[x]), range(len(candidate))))
 
-    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  # 加权距离
+    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  
     dis_sorted = np.argsort(dis_all_w)
 
     E_2 = np.sqrt(np.dot(rsdls_cur - np.mean(rsdls_cur),
@@ -804,12 +804,12 @@ def indivSelect_sem_2(tsematic_, candidates, tgdrvt_, tgdrvt_origin_, candidate_
 
                     break
 
-    # 返回该两个点
+    
     return (idx_min, candidate_min, None, k, succeed)
 
 
 def indivSelect_sem_(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candidate_origin_, origin_size, trs_size,
-                     depth_limit, mask, idx=None):  # 用于语义的个体选择
+                     depth_limit, mask, idx=None):  
     tsematic = tsematic_ * mask
     candidate = candidate_ * mask
     tgdrvt = tgdrvt_ * mask
@@ -818,7 +818,7 @@ def indivSelect_sem_(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candidate_o
 
     tgdrvt_r = tgdrvt_ * ((1 + mask) % 2)
 
-    # 选一个最近点
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
 
@@ -838,7 +838,7 @@ def indivSelect_sem_(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candidate_o
 
     rsdls_ = list(map(lambda x: np.subtract(tsematic, candidate[x] * b_list[x]), range(len(candidate))))
 
-    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  # 加权距离
+    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_))  
 
     dis_sorted = np.argsort(dis_all_w)
 
@@ -913,7 +913,7 @@ def indivSelect_sem_(tsematic_, candidate_, tgdrvt_, tgdrvt_origin_, candidate_o
         # if vec > lsm_vals[idx_1]:
         #     k = [k0_ * b_list[idx_min[0]], k1_]
         # else:
-    # 返回该两个点
+    
     return (idx_min, candidate_min, None, k, succeed)
 
 
@@ -1074,7 +1074,7 @@ def effect_test(tsematic, origin, candidate_1, candidate_2, k, tgdrvt, cdd_size,
                 origin_effect)  # , origin_effect_1, origin_effect_2, effect, effect - origin_effect, origin_effect)
 
 
-def bounds_check(subtr: TreeNode, smt_rg, k, data_rg):  # ![ ] 不支持有多个范围的情况
+def bounds_check(subtr: TreeNode, smt_rg, k, data_rg):  
     # if k is None:
     #     rg_0, rg_1 = smt_rg[0][0], smt_rg[0][1]
     # else:
@@ -1102,7 +1102,7 @@ def bounds_check(subtr: TreeNode, smt_rg, k, data_rg):  # ![ ] 不支持有多�
             child_rg_1 = child[1].getRange(data_rg)
             if (child_rg_1[0] <= 0. <= child_rg_1[1] or math.fabs(child_rg_1[0]) == 0.0 or math.fabs(
                     child_rg_1[1]) == 0.0) and child[0].print_exp_subtree() != child[
-                1].print_exp_subtree():  # 修改分子导致本来分子分母相同的除法不再平衡
+                1].print_exp_subtree():  
                 return False
         trs = x[0].getChilds().copy()
         trs.pop(x[1])
@@ -1153,7 +1153,7 @@ def roth(rd, tgs, res_vals):
 import dill
 
 
-def _crossover(rd, pprogs: [Program], smts: PopSemantic, funcs, depth_limit, fitness):  # [] python回收机制， 这些subtree_node不一定还存在
+def _crossover(rd, pprogs: [Program], smts: PopSemantic, funcs, depth_limit, fitness):  
     # crsover_time = [0, 0, 0]
     progs = []
     idx = 0
@@ -1202,7 +1202,7 @@ def _crossover(rd, pprogs: [Program], smts: PopSemantic, funcs, depth_limit, fit
                 tgdrvt = np.fabs(tgdrvt_origin)  # np.ones(len(tgsmt))#
                 tgdrvt_test = PyGP.abs_normalize(tgdrvt)  # np.ones(len(tgsmt))#np.fabs(tgdrvt_origin)#
                 # tgdrvt_weight = tgdrvt_origin
-                tgdrvt_f_idx = None  # PyGP.cluster(tgdrvt)[0]#过滤后的绝对偏导值
+                tgdrvt_f_idx = None  
                 # if PyGP.DEPTH_MAX_SIZE - (s3_rlt_depth + s3_height) >= 1 and s3_height > 1:
                 #     candidate.insert(0, cdd_origin)
                 #     smt_rg.insert(0, tr_origin.getRange(data_rg))

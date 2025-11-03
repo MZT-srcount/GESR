@@ -26,32 +26,32 @@ def gradient_exp_generate(prog: Program, output, cash_open=False):
     while stack:
         cnode = stack.pop()
 
-        # 第一次访问且非叶子节点；如果该节点已经被缓存，则不再会访问子节点
+        
         if cnode[1] == 1 and cnode[0].dtype == "Func":
             childs = cnode[0].getChilds()
             stack.append([cnode[0], cnode[1] + 1])
             stack.extend(list(map(lambda x: [x, 1], childs)))
 
-        # 第二次访问/叶子节点
+        
         elif cnode[0].dtype == "Func":
             # assert (not (cnode[0] == prog.root and prog.root.dtype != "Func"))  # root can not be an input or const value
 
-            # 自定义节点处理，暂不考虑
+            
             childs = cnode[0].getChilds()
             for i in range(len(childs)):
                 if c_sign.get(childs[i].node_id):
                     if not c_sign.get(cnode[0].node_id):
                         c_sign[cnode[0].node_id] = []
                     for k in c_sign[childs[i].node_id]:
-                        # 输入
+                        
                         expunit = [cnode[0].nodeval.id]
                         childs = cnode[0].getChilds()
                         expunit.append(len(childs))  # input size
                         expunit.extend(_input_collect(childs, cash_open, output, cnode[0]))
                         assert (len(expunit) - 2 == len(childs))
-                        # 操作符位置
+                        
                         expunit.append(i)
-                        # 输出
+                        
                         expunit.append(k)
 
                         expunit_collects[k].append(expunit)
@@ -279,7 +279,7 @@ class ConstOptimization(BaseOperator):
         if len(cnode_vals) == 0:
             return (None, None, None, None)
         (Y_gpu, Y_pitch) = cuda.mem_alloc_pitch(dataset_len * PyGP.DATA_TYPE, cnode_num,
-                                                PyGP.DATA_TYPE)  # 雅可比矩阵计算
+                                                PyGP.DATA_TYPE)  
 
         grad_exec = mod.get_function("gradient")
 

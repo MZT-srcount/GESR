@@ -110,7 +110,7 @@ if __name__ == '__main__':
                 except Exception as e:
                     print(e)
                 finally:
-                    # 取消定时器
+                    
                     signal.alarm(0)
                 print('exps: ', str(sym_exp), len(str(sym_exp)), sc[1])
                 print('origin exps: ', exp)

@@ -3,7 +3,7 @@ import random
 import dill
 
 
-def smtSign_db(prog, rand_state):  # 支持多个？标记一个用于backpropagation的语义点
+def smtSign_db(prog, rand_state):  
     r_depth = rand_state.randint(0, prog.depth + 1)
     if r_depth == 0:
         id = 0
@@ -29,7 +29,7 @@ def smtSign_db(prog, rand_state):  # 支持多个？标记一个用于backpropag
 
 
 
-def smtSign_nb(prog, rand_state):  # 支持多个？标记一个用于backpropagation的语义点
+def smtSign_nb(prog, rand_state):  
     id = rand_state.randint(0, prog.length)
     tnode = prog.getSubTree(id)
     # while tnode.semantic_sign == 0:
@@ -48,15 +48,15 @@ def smtSign_nb(prog, rand_state):  # 支持多个？标记一个用于backpropag
 def semanticSave_tnode(tnode):
     tnode.semantic_save = 0
 
-def backpSelect(pop, select_num, slt_depth, tg_list, lb_list):#选择语义backpropagation节点
+def backpSelect(pop, select_num, slt_depth, tg_list, lb_list):
     sem_selects = [[] for i in range(pop.pop_size)]
     sem_posi = []
     for i in tg_list:
-        for j in range(PyGP.SEMANTIC_CDD):#选取多个目标点
+        for j in range(PyGP.SEMANTIC_CDD):
             if random.uniform(0, 1) < 0.1:
-                (depth, height, id) = smtSign_db(pop.progs[i], pop.rand_state)#标记一个语义点
+                (depth, height, id) = smtSign_db(pop.progs[i], pop.rand_state)
             else:
-                (depth, height, id) = smtSign_nb(pop.progs[i], pop.rand_state)#标记一个语义点
+                (depth, height, id) = smtSign_nb(pop.progs[i], pop.rand_state)
             sem_posi.append(id)
             tnode_ = pop.progs[i].getSubTree(id)
             # sem_selects[i].append((i, tnode_.zip(), id))
@@ -76,7 +76,7 @@ def backpSelect(pop, select_num, slt_depth, tg_list, lb_list):#选择语义backp
             # end_id = pop.progs[rand_val].depth_nnum(r_depth)
             # id = random.randint(init_id, end_id)
             # tnode = pop.progs[rand_val].getSubTree(id)
-            tnode = PyGP.tnode_depth_select(pop.progs[i], rand_depth)#为了不增加深度，应该增加2
+            tnode = PyGP.tnode_depth_select(pop.progs[i], rand_depth)
             # if tnode.relative_depth() <= tnode_.relative_depth() + 1 and tnode.height() != 1:
             #     raise ValueError(tnode.height(), tnode_.height(), pop.progs[rand_val].depth, depth + 2)
             semanticSave_tnode(tnode)

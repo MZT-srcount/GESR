@@ -5,7 +5,6 @@ LastEditTime: 2023-08-08 16:05:23
 LastEditors: your name
 Description: 
 FilePath: \PyGP\PyGP\cash.py
-可以输入预定的版权声明、个性签名、空行等
 '''
 import multiprocessing
 import multiprocessing.managers as manager
@@ -136,7 +135,7 @@ class CashManager:
     def getCashPosi(self):
         return self.init_storeposi
 
-    def addCash(self, treeNode):#[] 目前没有空闲缓存点时不能调用，会出问题
+    def addCash(self, treeNode):
         if self.free_pointer:
             cash_alloc = self.free_pointer.pop()
         else:
@@ -159,13 +158,13 @@ class CashManager:
             self.cash_counter[self.cash_node[node.node_id]] += 1
             self.cash_node[treeNode.node_id] = self.cash_node[node.node_id]
             treeNode.setCashId(self.cash_node[node.node_id] + self.init_storeposi)
-        else:# 没有该节点，则直接增加
+        else:
             # self.addCash(treeNode)
             raise ValueError("cash pointer out of permitted cash size, cash_counter:", len(self.cash_counter),
                              "free_pointer:", len(self.free_pointer), "cash_pointer:", self.cash_pointer,
                              "cash_size: ", self.cash_size, node.getCashState(), self.cash_node.get(node.node_id))
 
-    def releaseNode(self, treeNode):# 每个treeNode一个node_id，但多个node_id可以共享一个缓存节点
+    def releaseNode(self, treeNode):
         if self.cash_node.get(treeNode.node_id) is None:
             return
         cash_point = self.cash_node[treeNode.node_id]

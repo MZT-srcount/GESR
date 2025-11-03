@@ -50,7 +50,7 @@ class BaseCrossover:
             # print(rd_state, '------------------')
             progs = self.run(progs, *args)
             for i in range(len(pprogs)):
-                if progs[i] is not None:#只有真正修改的才需要返回
+                if progs[i] is not None:
                 
                     if pprogs[i] == 0:
                         print("pprogs: ", pprogs[i])

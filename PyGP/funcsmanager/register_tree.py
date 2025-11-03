@@ -21,7 +21,7 @@ def register(func_name, func, arity, used_function_set):
         else:
             return TreeNode(input.val, node_id=--idx)
 
-    # 如果返回的是一个值或input？
+    
     treenode = TreeNode(used_function_set[res.op.op], node_id=--1)
     stack = [[res], [treenode]]
     while stack.shape[1] > 0:

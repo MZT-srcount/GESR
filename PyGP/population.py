@@ -43,8 +43,8 @@ class Population(PyGP.Base):
         self.funcs.init(self.funcs_name)
         self._crossover = PyGP.SMT_Weight_Crossover_LV2
         self._mutation = PyGP.RtnMutation()
-        self.backfuncs = []  # 反向传播函数
-        self.semantic_data = {}  # 语义信息保存，节点gpu位置：语义
+        self.backfuncs = []  
+        self.semantic_data = {}  
         self.last_best = None
         self.iter_id = 0
         if seed is not None:
@@ -631,7 +631,7 @@ class Population(PyGP.Base):
         # print('execution prepare 2: ', end - start)
         start = time.time()
 
-        # 数据初始化
+        
         exe_record = cuda.Event()
         eval_record = cuda.Event()
         semsave_record = cuda.Event()

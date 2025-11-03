@@ -79,7 +79,7 @@ class BaseOperator:
             progs = [PyGP.unzip(PyGP.sharedList[idx]) for idx in pprogs]
             progs = self.run(progs, *args)
             for i in range(len(pprogs)):
-                if progs[i] is not None:#只有真正修改的才需要返回
+                if progs[i] is not None:
                 
                     if pprogs[i] == 0:
                         print("pprogs: ", pprogs[i])

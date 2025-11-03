@@ -5,7 +5,6 @@ LastEditTime: 2023-08-07 11:40:51
 LastEditors: your name
 Description:
 FilePath: \PyGP\PyGP\func_init.py
-可以输入预定的版权声明、个性签名、空行等
 '''
 import PyGP
 from typing import Optional, List
@@ -105,7 +104,7 @@ class Func(object):
 
 
 class FunctionSet(object):
-    def __init__(self, type):#[] 类型为type(TreeNode n)
+    def __init__(self, type):
 
         self.init_function_set = {}
         self.used_function_set = {}

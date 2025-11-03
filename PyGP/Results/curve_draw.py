@@ -131,7 +131,7 @@ class DCurve:
         self.data.append((x, y))
         self.fitness.append(round(fit, 4))
 
-    def add_points(self, points):#第几幅图加点
+    def add_points(self, points):
         frame = len(self.data)
         if not self.points.get(frame):
             self.points[frame] = points

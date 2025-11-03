@@ -1,6 +1,6 @@
 SEMANTIC_SIGN = True
 INT_MAX = 2e20
-BATCH_NUM = 1#数据分组，将数据均匀分配给不同的block，有助于加速
+BATCH_NUM = 1
 CASHNUM_PERBLOCK = 1
 SEMANTIC_NUM = 100
 SEMANTIC_CDD = 3

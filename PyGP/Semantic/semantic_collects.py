@@ -13,8 +13,8 @@ import dill
 class Semantic:
     def __init__(self):
         self.node = (None, None)
-        self.s_backprogs = [] #用于反向传播语义的正向计算，包括：（沿路语义节点，节点的相对位置）
-        self.s_forwardfuncs = []  # 反向传播函数及数据节点收集
+        self.s_backprogs = [] 
+        self.s_forwardfuncs = []  
 
 class BPInfos:
     def __init__(self):
@@ -27,7 +27,7 @@ class BPInfos:
         while id >= len(self.semantic):
             self.semantic.append(Semantic())
         self.semantic[id].s_forwardfuncs.append(exp_unit)
-    def bfuncs_merge(self):#合并为[expunit, locate, ..., -1, ...]的形式
+    def bfuncs_merge(self):
         flatten_bfs = []
         bfs_posi = []
         for i in range(len(self.semantic)):
@@ -41,17 +41,17 @@ class BPInfos:
 
     def ffuncs_merge(self):
         return list(map(lambda x: x.s_forwardfuncs, self.semantic))
-class SemanticPerIndiv: #保存个体的语义并进行动态管理
+class SemanticPerIndiv: 
     def __init__(self):
-        self.s_nodes = []  # 需要保存的语义的gpu位置
-        self.s_idx = {}  # 语义节点保存在s_nodes的位置索引
+        self.s_nodes = []  
+        self.s_idx = {}  
         self.s_idx_reverse = []
         self.semantic = []
         self.s_num = 0
 
         self.snodes_cpu = []
-        self.tg_smt = [] # 子目标语义
-        self.tg_drvt = [] # 子目标语义偏导
+        self.tg_smt = [] 
+        self.tg_drvt = [] 
 
     def upper(self):
         self.s_num += 1
@@ -89,7 +89,7 @@ class SemanticPerIndiv: #保存个体的语义并进行动态管理
     def count(self):
         return self.s_num
 
-class PopSemantic:#管理整个种群的语义，主要作用在于个体语义的整理整合以及索引
+class PopSemantic:
     _defaults = {
         "semantics":    [],
         "ffuncs_d":     {},
@@ -144,7 +144,7 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
                     self.library_idx[ht] = {}
                 if not self.library_data.get(tr_exp):
                     self.library_idx[ht][tr_exp] = tr
-                    self.library_data[tr_exp] = (smts[j], ht)#语义，高度，在idx的索引
+                    self.library_data[tr_exp] = (smts[j], ht)
                     if self.data_rg is not None:
                         self.library_rg[tr_exp] = tr.getRange(self.data_rg)
                     const_num = PyGP.tr_const_num(tr)
@@ -269,7 +269,7 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
         # self.ffuncs_d = [ffuncs_tmp[x] for x in rks]
 
 
-    def set_library(self, prog_sn): #每个个体的备选语义{indiv_i: [(prog_id, tnode)...], ...}
+    def set_library(self, prog_sn): 
         self.library = [[(item[0], PyGP.unzip(item[1], tr=True)) if len(item) == 2
                          else (item[0], PyGP.unzip(item[1], tr=True), item[2])
                          for item in prog] for prog in prog_sn]
@@ -290,7 +290,7 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
         else:
             self.ffuncs_d[id] = np.concatenate([self.ffuncs_d[id], data])
 
-    def data_load(self, tsematic, snodes, tderivate): #数据保存
+    def data_load(self, tsematic, snodes, tderivate): 
         offset = 0
         len_bn = list(map(lambda x: x.count, self.semantics))
         for i in range(len(self.semantics)):
@@ -317,7 +317,7 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
     def get_indiv_semantic(self, prog_id):
         new_s = self.semantics[prog_id]
         return self.semantics[prog_id]
-    def get_snode_d(self, prog_id, exp): #获取个体语义缓存
+    def get_snode_d(self, prog_id, exp): 
         # exp = node.print_exp_subtree(noparent=True)
         idx = self.semantics[prog_id].get_snode_idx(exp)
         return self.semantics[prog_id].snodes_cpu[idx]
@@ -325,17 +325,17 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
     def get_snode_idx(self, prog_id, exp):
         return self.semantics[prog_id].get_snode_idx(exp)
 
-    def get_snode_alld(self, prog_id): #获取个体所有语义缓存
+    def get_snode_alld(self, prog_id): 
         return (list(map(lambda x: self.get_snode_d(x[0], x[1].print_exp_subtree(noparent=True)), self.library[prog_id])),#semantic of treenodes
                 list(map(lambda x: x[1], self.library[prog_id])))#treenodes
 
-    def get_tgsmt_d(self, prog_id, smt_id = 0): #获取个体子目标语义
+    def get_tgsmt_d(self, prog_id, smt_id = 0): 
         return self.semantics[prog_id].tg_smt[smt_id]
 
     def get_drvt_d(self, prog_id, smt_id = 0):
         return self.semantics[prog_id].tg_drvt[smt_id]
 
-    def get_node(self, prog_id, idx): #获取语义id对应节点
+    def get_node(self, prog_id, idx): 
         return self.semantics[prog_id].s_idx_reverse[idx]
 
     def get_tg_node(self, prog_id, smt_id = 0):
@@ -347,7 +347,7 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
             assert (0==1)
         return self.semantics[prog_id].semantic[smt_id].node[1]
 
-    def get_snode_tgsmt(self, prog_id, smt_id = 0): #获取个体子目标的语义缓存
+    def get_snode_tgsmt(self, prog_id, smt_id = 0): 
         tg_node = self.semantics[prog_id].semantic[smt_id].node[0]
         return self.get_snode_d(prog_id, tg_node)
 
@@ -393,12 +393,12 @@ class PopSemantic:#管理整个种群的语义，主要作用在于个体语义�
             res_vals.append(0)
         res_max = max(res_vals)
         res_vals = [res_max if val == -1 else val for val in res_vals]
-        return (tgs, res_vals)#返回(目标id, 残差值)
+        return (tgs, res_vals)
 
 
 
 def bfuncs_merge(bfuncs):
-    # 影城
+    
     flatten_bfs = []
     bfs_posi = [0]
     for i in range(len(bfuncs)):
@@ -408,7 +408,7 @@ def bfuncs_merge(bfuncs):
 
     return(flatten_bfs, bfs_posi)
 
-def ffuncs_d_clts(ffuncs):#获取前向语义计算所需的语义节点的数据，去重;[] 暂未实现，被屏蔽
+def ffuncs_d_clts(ffuncs):
     ffuncs = list(map(lambda x: x.ffuncs_merge()[0:], ffuncs))
     flatten_d = list(itertools.chain(*ffuncs))
     return flatten_d

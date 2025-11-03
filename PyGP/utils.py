@@ -4,8 +4,6 @@ Date: 2023-08-08 15:50:06
 LastEditTime: 2023-08-08 15:50:27
 LastEditors: your name
 Description: 
-FilePath: \PyGP\PyGP\helper.py
-可以输入预定的版权声明、个性签名、空行等
 '''
 import multiprocessing
 import random
@@ -126,7 +124,7 @@ def inorder_traversal(tnode: TreeNode, str_, stack):
         for i in range(1, len(childs)):
             inorder_traversal(childs[len(childs) - i - 1], str_, stack)
         if tnode.parent is not None and (tnode.parent[0].nodeval.priority > tnode.nodeval.priority or \
-                ((tnode.parent[0].nodeval.name == '-' or tnode.parent[0].nodeval.name == '/') and tnode.parent[0].nodeval.priority == tnode.nodeval.priority and tnode.parent[1] > 0)):#默认父代也为Func类型
+                ((tnode.parent[0].nodeval.name == '-' or tnode.parent[0].nodeval.name == '/') and tnode.parent[0].nodeval.priority == tnode.nodeval.priority and tnode.parent[1] > 0)):
             if tnode.getArity() == 2:
                 str_[0] = '(' + stack.pop() + ' ' + tnode.nodeval.name + ' ' + stack.pop() + ')'
             elif tnode.getArity() == 1:
@@ -147,7 +145,7 @@ def inorder_traversal(tnode: TreeNode, str_, stack):
         stack.append(str_[0])
 
 from PyGP import Program
-def tnode_depth_select_(prog: Program, depth_select):#根据深度选择相应语义节点
+def tnode_depth_select_(prog: Program, depth_select):
     stack = [prog.root]
     dep_stack = []
     standby_stack = []
@@ -179,7 +177,7 @@ def tnode_depth_select_(prog: Program, depth_select):#根据深度选择相应�
                 standby_stack = stack.copy()
             dep_stack = []
             depth += 1
-    return standby_stack[random.randint(0, len(standby_stack) - 1)] if len(standby_stack) > 0 else prog.root#没有找到适合深度的节点，返回叶子节点
+    return standby_stack[random.randint(0, len(standby_stack) - 1)] if len(standby_stack) > 0 else prog.root
 
 def tnode_depth_select(prog: Program, depth_select):
     if depth_select == 0:
@@ -193,7 +191,7 @@ def tnode_depth_select(prog: Program, depth_select):
 from PyGP import Population
 import time
 
-def semanticSearch(treenode):#查找该子树是否存在语义标识
+def semanticSearch(treenode):
     if PyGP.SEMANTIC_SIGN:
         stack = [treenode]
         while stack:
@@ -209,7 +207,7 @@ def data_filter(dataset, fitness, range_, num):
     d_len = len(dataset[0])
     data = []
 
-    #设置初始中心点
+    
     for i in range(d_len):
         data.append((np.array([dataset[j][i] for j in range(n_terms)]), fitness[i]))
     print(data)
@@ -219,7 +217,7 @@ def data_filter(dataset, fitness, range_, num):
     group = [[] for i in range(num)]
     center = [np.array([range_[0][0] + step / 2 + step * i if j == 0 else data[int(step_num * i + step_num / 2)][0][j] for j in range(n_terms)]) for i in range(num)]
 
-    #k-mean聚类
+    
     times = 50
     count = 0
     while(count < times):
@@ -237,7 +235,7 @@ def data_filter(dataset, fitness, range_, num):
 
     data_filter = [[] for i in range(n_terms)]
     res_filter = []
-    #寻找最近点
+    
     for i in range(num):
         # assert(len(group[i]) > 0)
         dist = list(map(lambda x: np.sqrt(np.dot(x[0] - center[i], x[0] - center[i])), group[i]))
@@ -246,7 +244,7 @@ def data_filter(dataset, fitness, range_, num):
         res_filter.append(group[i][idx][1])
     return (data_filter, res_filter)
 
-def cluster(array):#二类聚类，根据k-聚类改编
+def cluster(array):
 
     # resval = np.absolute(np.subtract(tgsmt, cdd))
     # array = resval * array
@@ -272,13 +270,13 @@ def cluster(array):#二类聚类，根据k-聚类改编
 
     return (group_0, group_1)
 def abs_normalize(array):
-    x = np.array(np.absolute(array), dtype=np.float32 if PyGP.DATA_TYPE == 4 else np.float64)#取绝对值
+    x = np.array(np.absolute(array), dtype=np.float32 if PyGP.DATA_TYPE == 4 else np.float64)
     x_max = np.max(x)
     x_min = np.min(x)
     if(x_max == x_min):
         return np.fabs(array)
     return (x - x_min) / (x_max - x_min)
-    # return (x - np.mean(x)) / np.std(x) if np.std(x) != 0 else np.ones(len(array))#均值归一
+    
 
 def IterRun(population_size, generation, cross_rate, mut_rate, init_method , init_depth, data_train, fit_train, function_set=['add', 'sub', 'mul', 'div']):
     pop = Population(population_size, cross_rate=cross_rate, mut_rate=mut_rate, function_set=['add', 'sub', 'mul', 'div'])
@@ -296,7 +294,7 @@ def IterRun(population_size, generation, cross_rate, mut_rate, init_method , ini
         pop.selection()
 
         end = time.time()
-        print('程序运行时间为：', end - start, '秒', 'aver_size: ', pop.getAverSize(), '\n\n')
+        print('Run time: ', end - start, 's', 'Aver_size: ', pop.getAverSize(), '\n\n')
 
 
 def rg_compute(node, idx, data_rg):
@@ -324,7 +322,7 @@ def rg_compute(node, idx, data_rg):
                    data_rg[idx][1] * data_rg[idx + 1][1], )
         if node.childs[0].print_exp_subtree() == node.childs[1].print_exp_subtree() and rg_0 < 0:
             rg_0 = 0.
-    elif opera == 3:#[ ]idx+1的区间包含0时并不准确，不过如果可以用来排除0的话就行了
+    elif opera == 3:
         if data_rg[idx + 1][0] <= 0. <= data_rg[idx + 1][1] or math.fabs(data_rg[idx + 1][0]) == 0.0 or math.fabs(data_rg[idx + 1][1]) == 0.0:
             rg_0, rg_1 = -1.e10, 1.e10
         else:
@@ -348,7 +346,7 @@ def rg_compute(node, idx, data_rg):
 
         left_min = math.floor(rg_0 / (math.pi * 2)) * math.pi * 2
 
-        if rg_1 - rg_0 >= 2 * math.pi or rg_0 <= left_min + math.pi <= rg_1:#约算，主要看是否过零点
+        if rg_1 - rg_0 >= 2 * math.pi or rg_0 <= left_min + math.pi <= rg_1:
             rg_0, rg_1 = -1, 1
         else:
             if rg_1 - left_min < math.pi:
@@ -366,7 +364,7 @@ def rg_compute(node, idx, data_rg):
 
         left_min = math.floor(rg_0 / (math.pi * 2)) * math.pi * 2 - math.pi / 2
 
-        if rg_1 - rg_0 >= 2 * math.pi or rg_0 <= left_min + math.pi <= rg_1:#约算，主要看是否过零点
+        if rg_1 - rg_0 >= 2 * math.pi or rg_0 <= left_min + math.pi <= rg_1:
             rg_0, rg_1 = -1, 1
         else:
             if rg_1 - left_min < math.pi:

@@ -26,7 +26,7 @@ def _output_collect(prog, cnode, cash_open, output, s_signs):
     if s_inher:
         for i in range(len(childs)):
             if (childs[i].getCashState() == 0 or not cash_open) and childs[
-                i].dtype == "Func":  # ((childs[i].semantic_sign < 0 and childs[i].semantic_save < 0) or not semantic):#很麻烦且浪费性能，语义情况下直接不复用了，不过在树规模很大时内存是否会不足
+                i].dtype == "Func":  
                 return output[childs[i].node_id]
     return -1
 
@@ -38,33 +38,33 @@ def data_collects(prog_id, prog, id_altr, cvals):
     while stack:
         cnode = stack.pop()
 
-        # 第一次访问且非叶子节点；如果该节点已经被缓存，则不再会访问子节点
+        
         if cnode[1] == 1 and cnode[0].dtype == "Func":
             childs = cnode[0].getChilds()
             stack.append([cnode[0], cnode[1] + 1])
             stack.extend(list(map(lambda x: [x, 1], childs)))
 
-        # 第二次访问/叶子节点
+        
         elif cnode[0].dtype == "Func":
             # assert (not (cnode[0] == prog.root and prog.root.dtype != "Func"))  # root can not be an input or const value
 
-            # 自定义节点
-            if cnode[0].nodeval.id == -1:  # [] 处理自定义节点？有点忘了
+            
+            if cnode[0].nodeval.id == -1:  
                 expunits = treeid_update(cnode[0].nodeval.root,
                                          output, cvals, id_altr,
                                          cnode[0].getChilds())
                 expunit_collects[1].extend(expunits[1])
                 expunit_collects[0].extend(expunits[0])
-                # [!] 这里直接continue?
+                
 
-            # 输入
+            
             expunit = [cnode[0].nodeval.id]
             childs = cnode[0].getChilds()
             expunit.append(len(childs))  # input size
             expunit.extend(_input_collect(childs, False, output, cnode[0]))
             funcs_num = sum(1 for child in childs if child.dtype == "Func")
 
-            # 输出
+            
             if cnode[0] == prog.root:
                 expunit.append(prog.n_terms + 1 + prog_id)
             else:
@@ -74,7 +74,7 @@ def data_collects(prog_id, prog, id_altr, cvals):
             assert (expunit[len(expunit) - 1] >= 0)
             output[cnode[0].node_id] = expunit[len(expunit) - 1]
 
-            # 所有节点是否均为叶子节点，提高L1、L2缓存利用率
+            
             if funcs_num > 0:
                 expunit_collects[1].extend(expunit)
             else:
@@ -86,7 +86,7 @@ def data_collects(prog_id, prog, id_altr, cvals):
                 output[cnode[0].node_id] = cnode[0].nodeval
             elif cnode[0].dtype == "Const":
                 cvals.append(cnode[0].nodeval)
-                output[cnode[0].node_id] = - (len(cvals))  # 不可为len(cvals) - 1，因为为0时无法区分
+                output[cnode[0].node_id] = - (len(cvals))  
 
     exp_reunion = expunit_collects[0] + expunit_collects[1] + [-1]
     return (exp_reunion, output)

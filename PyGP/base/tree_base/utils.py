@@ -58,7 +58,7 @@ def treeid_update(root: TreeNode, output, const_val, id_allocator, *args):
                 const_val.append(tn[0].nodeval)
                 output_sub[tn[0].node_id] = (-(len(const_val) - 1))
             if tn[0].dtype == "Input":
-                # 是不是有问题，之前是raise NotImplementError
+                
                 output_sub[tn[0].node_id] = tn[0].nodeval
         counter += 1
 
@@ -72,8 +72,8 @@ def tr_copy_nc(tr_self):
     stack = [tnode_root]
     tr_stack = [tr_self]
     while stack:
-        tr1 = stack.pop()  # 本体
-        tr2 = tr_stack.pop()  # 目标对象
+        tr1 = stack.pop()  
+        tr2 = tr_stack.pop()  
         tr1_childs = []
         if tr2.getCashState() > 0:
             tr1.changeCashState(0)

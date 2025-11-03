@@ -10,8 +10,8 @@ def r_snodes_select(smt_len, num):
         slts = np.random.choice(range(smt_len), size=num, replace=False)
         return np.sort(slts)
 
-def indivSelect_sem(tsematic, candidate, tgdrvt, tgdrvt_f_idx):#用于语义的个体选择
-    # 选一个最近点
+def indivSelect_sem(tsematic, candidate, tgdrvt, tgdrvt_f_idx):
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
     tgdrvt_f = tgdrvt[tgdrvt_f_idx]
@@ -20,7 +20,7 @@ def indivSelect_sem(tsematic, candidate, tgdrvt, tgdrvt_f_idx):#用于语义的�
 
     rsdls = list(map(lambda x: np.subtract(tsematic, x), candidate))
     dis_all = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls))
-    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls * tgdrvt))#加权距离
+    dis_all_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls * tgdrvt))
     rsdls_f = list(map(lambda x: np.subtract(tsematic_f, x), candidate_f))
     dis_all_f_w = list(map(lambda x: np.sqrt(np.dot(x, x)), rsdls_f))
 
@@ -29,7 +29,7 @@ def indivSelect_sem(tsematic, candidate, tgdrvt, tgdrvt_f_idx):#用于语义的�
     candidate_min[0] = candidate[idx]
     idx_min[0] = idx
 
-    # 根据海伦公式求目标语义点到直线距离
+    
     def helon_dist(x, y):
         rsdl = np.subtract(candidate_f[idx], x)
         rlt_dis = np.sqrt(np.dot(rsdl, rsdl))
@@ -40,12 +40,12 @@ def indivSelect_sem(tsematic, candidate, tgdrvt, tgdrvt_f_idx):#用于语义的�
         else:
             return np.sqrt(helon_dis_) / (rlt_dis * 2)
 
-    # 以该最近点为基础，选另一个横线上的最近点
+    
     idx_1 = np.argmin(list(map(helon_dist, candidate_f, dis_all_f_w)))
     candidate_min[1] = candidate[idx_1]
     idx_min[1] = idx_1
 
-    # 返回该两个点
+    
     return (idx_min, candidate_min)
 
 
@@ -83,7 +83,7 @@ def effect_test(tsematic, origin, candidate_1, candidate_2, k, tgdrvt, serious =
 
 
 
-def crossover(pprogs: [Program], progs_: [Program], smts: PopSemantic, funcs, r_slt):#[] python回收机制， 这些subtree_node不一定还存在
+def crossover(pprogs: [Program], progs_: [Program], smts: PopSemantic, funcs, r_slt):
     progs = []
     idx = 0
     # print("len(progs): ", len(progs))
@@ -126,7 +126,7 @@ def crossover(pprogs: [Program], progs_: [Program], smts: PopSemantic, funcs, r_
                     for j in range(smts.semantics[id].count):
                         smts.semantics[id].semantic[j].node.exp_draw()
                     assert (1 == 0)
-                tgdrvt_f_idx = PyGP.cluster(tgdrvt)[0]#过滤后的绝对偏导值
+                tgdrvt_f_idx = PyGP.cluster(tgdrvt)[0]
                 tgdrvt = PyGP.abs_normalize(tgdrvt)
 
                 (indiv_idx, indivs) = indivSelect_sem(tsematic=tgsmt, candidate=candidate, tgdrvt=tgdrvt, tgdrvt_f_idx=tgdrvt_f_idx)
@@ -134,7 +134,7 @@ def crossover(pprogs: [Program], progs_: [Program], smts: PopSemantic, funcs, r_
                 k:float = float(least_square_method(tgsmt[tgdrvt_f_idx], indivs[0][tgdrvt_f_idx], indivs[1][tgdrvt_f_idx], indivs))
                 effect_better = effect_test(tgsmt, cdd_origin,
                                             indivs[0], indivs[1], k, tgdrvt, serious=True)
-                if not effect_better[0] and 10 - (subtree3.relative_depth() + subtree3.height()) >= 2:#将自身也加进去
+                if not effect_better[0] and 10 - (subtree3.relative_depth() + subtree3.height()) >= 2:
                     # a = True
                     (candidate, trs_cdd) = smts.get_smt_trs(subtree3.height(), PyGP.SEMANTIC_NUM)
                     candidate.insert(0, cdd_origin)

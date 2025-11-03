@@ -3,8 +3,8 @@ import math
 
 import PyGP
 from PyGP import Program, PopSemantic, TreeNode
-def indivSelect_sem(tsematic, candidate):#用于语义的个体选择
-    # 选一个最近点
+def indivSelect_sem(tsematic, candidate):
+    
     idx_min = [-1, -1]
     candidate_min = [candidate[0], candidate[1]]
 
@@ -15,7 +15,7 @@ def indivSelect_sem(tsematic, candidate):#用于语义的个体选择
     candidate_min[0] = candidate[idx]
     idx_min[0] = idx
 
-    # 根据海伦公式求目标语义点到直线距离
+    
     def helon_dist(x, y):
         rsdl = np.subtract(candidate_min[0], x)
         rlt_dis = np.sqrt(np.dot(rsdl, rsdl))
@@ -26,12 +26,12 @@ def indivSelect_sem(tsematic, candidate):#用于语义的个体选择
         else:
             return np.sqrt(helon_dis_) / (rlt_dis * 2)
 
-    # 以该最近点为基础，选另一个横线上的最近点
+    
     idx_1 = np.argmin(list(map(helon_dist, candidate, dis_all)))
     candidate_min[1] = candidate[idx_1]
     idx_min[1] = idx_1
 
-    # 返回该两个点
+    
     return (idx_min, candidate_min)
 
 def least_square_method(tsematic, candidate_1, candidate_2, ccd):
@@ -56,7 +56,7 @@ def effect_test(tsematic, origin, candidate_1, candidate_2, k, serious = False):
     else:
         return (effect < origin_effect and math.fabs(effect - origin_effect) > 1e-2, effect, origin_effect)#, origin_effect_1, origin_effect_2, effect, effect - origin_effect, origin_effect)
 
-def crossover(pprogs: [Program], smts: PopSemantic, funcs):#[] python回收机制， 这些subtree_node不一定还存在
+def crossover(pprogs: [Program], smts: PopSemantic, funcs):
     progs = []
     idx = 0
     print("len(progs): ", len(progs))
@@ -92,7 +92,7 @@ def crossover(pprogs: [Program], smts: PopSemantic, funcs):#[] python回收机�
             #     tr_origin.exp_draw()
 
             # a = False
-            if not effect_better[0] and rand_uniform < 0.5 and 12 - (subtree3.relative_depth() + subtree3.height()) >= 2:#将自身也加进去
+            if not effect_better[0] and rand_uniform < 0.5 and 12 - (subtree3.relative_depth() + subtree3.height()) >= 2:
                 # a = True
                 candidate.insert(0, cdd_origin)
                 trs_cdd.insert(0, tr_origin)
