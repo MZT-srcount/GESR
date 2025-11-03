@@ -975,7 +975,7 @@ class Population(PyGP.Base):
         aver_size /= self.pop_size
         return aver_size
 
-    def getOutput(self, idx:int, d_len):#[ ]数据太多不行，exe会分批执行
+    def getOutput(self, idx:int, d_len):
         output = np.empty(d_len).astype(np.float32 if PyGP.DATA_TYPE == 4 else np.float64)
         (input_gpu, input_pitch) = self.cuda_mem_manager.get_inputgpu()
         self.cuda_mem_manager.memcopy_2D(output,
@@ -995,7 +995,6 @@ class Population(PyGP.Base):
         autoinit.context.synchronize()
         return output
     def cashInit(self, cash_mem_size=None):
-        # [ ] 应该要首先检查gpu可用内存，2G也许在一些显卡上无法分配
         cash_size = int(2 * (1024 ** 3) / self.dataset_len / PyGP.DATA_TYPE)
         if cash_mem_size is None:
             cash_size = int(2 * (1024 ** 3) / self.dataset_len / PyGP.DATA_TYPE)
@@ -1011,7 +1010,6 @@ class Population(PyGP.Base):
         # self.cuda_mem_manager.cash_alloc(height)
 
     def cashReset(self, cash_mem_size=None):
-        # [ ] 应该要首先检查gpu可用内存，2G也许在一些显卡上无法分配
         cash_size = int(2 * (1024 ** 3) / self.dataset_len / PyGP.DATA_TYPE)
         if cash_mem_size is None:
             cash_size = int(2 * (1024 ** 3) / self.dataset_len / PyGP.DATA_TYPE)
@@ -1028,3 +1026,4 @@ class Population(PyGP.Base):
     def preExecution(self):
 
         raise NotImplementedError
+
